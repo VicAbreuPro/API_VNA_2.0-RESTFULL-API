@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
+﻿
 namespace API_VNA_2._0.BusinessObjects
 {
     /// <summary>
@@ -11,11 +7,11 @@ namespace API_VNA_2._0.BusinessObjects
     [Serializable]
     public class ProductDetail
     {
-        public string model { get; set; }
-        public int weight { get; set; }
-        public int height { get; set; }
-        public int year { get; set; }
-        public string color { get; set; }
+        public string ?model { get; set; }
+        public int ?weight { get; set; }
+        public int ?height { get; set; }
+        public int ?year { get; set; }
+        public string ?color { get; set; }
 
         public ProductDetail() { } // Default Constructor
 

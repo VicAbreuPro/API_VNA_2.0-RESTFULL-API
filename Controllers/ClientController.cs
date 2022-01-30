@@ -9,14 +9,14 @@ namespace API_VNA_2._0.Controllers
     [ApiController]
     public class ClientController : ControllerBase
     {
-        public static DataSet dt;
+        public static DataSet ?dt;
 
         public ClientController()
         {
             dt = Data.DataAccess.AllData();
         }
 
-        [HttpGet("clientList")]
+        [HttpGet("ClientList")]
         public string C_List()
         {
             Clients.clientList = Data.DataAccess.GetClients(Clients.clientList, dt.Tables["clientes"]);
@@ -39,29 +39,18 @@ namespace API_VNA_2._0.Controllers
             return json;
         }
 
-        /// <summary>
-        /// Add client to DB by JSON string input
-        /// </summary>
-        /// /// <param name="json"<></param>
         [HttpPost("AddClient")]
-        public ActionResult AddClient(string json)
+        public async Task<ActionResult> PostClient(Client c)
         {
-            var cJson = JsonConvert.DeserializeObject<Client>(json);
+            // Add new Client with bool response to confirm the success of operation
+            bool aux = Data.DataAccess.AddClient(c);
 
-            if (cJson != null)
-            {
-                 Client c = new();
+            // Define Task Delay
+            await Task.Delay(2000);
 
-                 c.name = cJson.name;
-                 c.id = cJson.id;
-                 c.location = cJson.location;
-                 c.date = cJson.date;
-
-                bool aux = Data.DataAccess.AddClient(c);
-                if(aux == true) return Ok();
-                else return Unauthorized();
-            }
-            else return Unauthorized(); 
+            // Return Http code according the result of Add Client Method from data layer
+            if(aux == true) return Ok();
+            else return Unauthorized();
         }
     }
 }

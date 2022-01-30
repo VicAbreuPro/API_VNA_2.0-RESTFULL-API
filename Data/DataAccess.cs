@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using MySql.Data.MySqlClient;
+﻿using MySql.Data.MySqlClient;
 using System.Data;
 using API_VNA_2._0.BusinessObjects;
-using System.Threading.Tasks;
 
 namespace API_VNA_2._0.Data
 {
@@ -208,6 +204,7 @@ namespace API_VNA_2._0.Data
             }
             return true;
         }
+
         public static bool AddProduct(Product p)
         {
             // Atribuir a uma variável o comando SQL para inserir os dados e seus respetivos valores

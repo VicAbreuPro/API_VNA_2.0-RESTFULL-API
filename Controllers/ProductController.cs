@@ -9,13 +9,12 @@ namespace API_VNA_2._0.Controllers
     [Route("Product")]
     public class ProductController : ControllerBase
     {
-        public static DataSet dt;
+        public static DataSet ?dt;
 
         public ProductController()
         {
             dt = Data.DataAccess.AllData();
         }
-
 
         [HttpGet("ProductList")]
         public string P_List()
@@ -27,24 +26,17 @@ namespace API_VNA_2._0.Controllers
         }
 
         [HttpPost("AddProduct")]
-        public ActionResult AddProduct(string json)
+        public async Task<ActionResult> PostProduct(Product p)
         {
-            var pJson = JsonConvert.DeserializeObject<Product>(json);
+            // Add new Product with bool response to confirm the success of operation
+            bool aux = Data.DataAccess.AddProduct(p);
 
-            if (pJson != null)
-            {
-                Product p = new Product();
+            // Define Task Delay
+            await Task.Delay(2000);
 
-                p.model = pJson.model;
-                p.serial = pJson.serial;
-                p.valor = pJson.valor;
-
-                bool aux = Data.DataAccess.AddProduct(p);
-                if (aux == true) return Ok();
-                else return Unauthorized();
-            }
+            // Return Http code according the result of Add Product Method from data layer
+            if (aux == true) return Ok();
             else return Unauthorized();
         }
-
     }
 }

@@ -1,12 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Data;
-using System.Text.Json;
 using API_VNA_2._0.BusinessObjects;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace API_VNA_2._0.Controllers
 {
@@ -32,24 +27,16 @@ namespace API_VNA_2._0.Controllers
         }
 
         [HttpPost("AddSale")]
-        public ActionResult AddSale(string json)
+        public async Task<ActionResult> PostSale(Sale s)
         {
-            var sJson = JsonConvert.DeserializeObject<Sale>(json);
+            // Add new Sale with bool response to confirm the success of operation
+            bool aux = Data.DataAccess.AddSale(s);
 
-            if (sJson != null)
-            {
-                Sale s = new();
+            // Define Task Delay
+            await Task.Delay(2000);
 
-                s.model = sJson.model;
-                s.serial = sJson.serial;
-                s.valor = sJson.valor;
-                s.client_id = sJson.client_id;
-                s.date = sJson.date;
-
-                bool aux = Data.DataAccess.AddSale(s);
-                if (aux == true) return Ok();
-                else return Unauthorized();
-            }
+            // Return Http code according the result of Add Sale Method from data layer
+            if (aux == true) return Ok();
             else return Unauthorized();
         }
     }

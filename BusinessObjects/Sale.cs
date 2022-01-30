@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
+﻿
 namespace API_VNA_2._0.BusinessObjects
 {
     /// <summary>
@@ -11,12 +7,12 @@ namespace API_VNA_2._0.BusinessObjects
     [Serializable]
     public class Sale
     {
-        public string sale_id { get; set; }
-        public int serial { get; set; }
-        public int valor { get; set; }
-        public string model { get; set; }
-        public int client_id { get; set; }
-        public string date { get; set; }
+        public string ?sale_id { get; set; }
+        public int ?serial { get; set; }
+        public int ?valor { get; set; }
+        public string ?model { get; set; }
+        public int ?client_id { get; set; }
+        public string ?date { get; set; }
 
         public Sale()
         {
