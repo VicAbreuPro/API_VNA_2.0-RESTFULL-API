@@ -52,5 +52,19 @@ namespace API_VNA_2._0.Controllers
             if(aux == true) return Ok();
             else return Unauthorized();
         }
+
+        [HttpPost("UpdateClient")]
+        public async Task<ActionResult> UpdateClient(Client c)
+        {
+            // Add new Client with bool response to confirm the success of operation
+            bool aux = Data.DataAccess.UpdateClient(c);
+
+            // Define Task Delay
+            await Task.Delay(2000);
+
+            // Return Http code according the result of Add Client Method from data layer
+            if (aux == true) return Ok();
+            else return Unauthorized();
+        }
     }
 }

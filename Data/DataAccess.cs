@@ -175,6 +175,59 @@ namespace API_VNA_2._0.Data
             }
         }
 
+        public static bool UpdateClient(Client c)
+        {
+            // Variáveis Auxiliares
+            bool aux = false;
+            DataSet dt = AllData();
+            List<Client> clientList = new List<Client>();
+            List<Client> clientListAux = GetClients(clientList, dt.Tables["clientes"]);
+
+            // Verificar se Cliente existe na base de dados
+            foreach (Client client in clientListAux)
+            {
+                if(client.id == c.id)
+                {
+                    aux = true;
+                    Console.WriteLine(c.name);
+                }
+            }
+
+            // Se cliente existir, atulizar as informações com os atributos do novo objeto do tipo Cliente recebido
+            if(aux == true)
+            {
+                var sqlUpdate = "UPDATE cli_app.Cliente SET client_name = @cliAux , client_location = @localAux , since_date = @dateAux WHERE client_id = @idAux";
+
+                // Iniciar processo de conexão a ao servidor com auxilio da Classe Conn que possui os dados de conexão
+                try
+                {
+                    using (var connection = new MySqlConnection(Conn.strConn))
+                    {
+                        // Criar novo objeto "comando" para executar comando SQL criado
+                        MySqlCommand sqlInsert_Aux = new MySqlCommand(sqlUpdate, connection);
+
+                        //Adicionar parâmetros ao comando de acordo com as variáveis de entrada (método mais seguro)
+                        sqlInsert_Aux.Parameters.AddWithValue("@cliAux", c.name);
+                        sqlInsert_Aux.Parameters.AddWithValue("@localAux", c.location);
+                        sqlInsert_Aux.Parameters.AddWithValue("@dateAux", c.date);
+                        sqlInsert_Aux.Parameters.AddWithValue("@idAux", c.id);
+
+                        // Abrir conexão com base de dados
+                        connection.Open();
+
+                        // Executar comando SQL
+                        sqlInsert_Aux.ExecuteReader();
+                        return true;
+                    }
+                }
+                catch (Exception)
+                {
+                    return false;
+                    // Exibir mensagem do erro específico
+                }
+            }else return false;
+        }
+
         public static bool VerifyUser(string name, string password)
         {
             DataSet dt = new DataSet();
