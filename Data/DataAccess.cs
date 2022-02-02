@@ -355,6 +355,56 @@ namespace API_VNA_2._0.Data
             else return false;
         }
 
+        public static bool UpdateSale(Sale s)
+        {
+            DataSet dt = AllData();
+            List<Sale> saleList = new List<Sale>();
+            List<Sale> saleListAux = GetSales(saleList, dt.Tables["vendas"]);
+            bool aux = false;
+
+            foreach(Sale sale in saleListAux)
+            {
+                if (sale.sale_id == s.sale_id) aux = true;
+            }
+
+            // Se a Venda existir, atulizar as informações com os atributos do novo objeto do tipo Venda recebido
+            if (aux == true)
+            {
+                var sqlUpdate = "UPDATE cli_app.sales SET serial_number = @serialAux , model = @modelAux , data_buy = @dateAux , client_id = @cliAux, valor = @valueAux WHERE saleID = @idAux";
+
+                // Iniciar processo de conexão a ao servidor com auxilio da Classe Conn que possui os dados de conexão
+                try
+                {
+                    using (var connection = new MySqlConnection(Conn.strConn)) {
+
+                        // Criar novo objeto "comando" para executar comando SQL criado
+                        MySqlCommand sqlInsert_Aux = new MySqlCommand(sqlUpdate, connection);
+
+                        //Adicionar parâmetros ao comando de acordo com as variáveis de entrada (método mais seguro)
+                        sqlInsert_Aux.Parameters.AddWithValue("@serialAux", s.serial);
+                        sqlInsert_Aux.Parameters.AddWithValue("@modelAux",s.model);
+                        sqlInsert_Aux.Parameters.AddWithValue("@dateAux", s.date);
+                        sqlInsert_Aux.Parameters.AddWithValue("@cliAux", s.client_id);
+                        sqlInsert_Aux.Parameters.AddWithValue("@valueAux", s.valor);
+                        sqlInsert_Aux.Parameters.AddWithValue("@idAux", s.sale_id);
+
+                        // Abrir conexão com base de dados
+                        connection.Open();
+
+                        // Executar comando SQL
+                        sqlInsert_Aux.ExecuteReader();
+                        return true;
+                    }
+                }
+                catch (Exception)
+                {
+                    return false;
+                    // Exibir mensagem do erro específico
+                }
+            }
+            else return false;
+        }
+
         #endregion
         public static bool VerifyUser(string name, string password)
         {

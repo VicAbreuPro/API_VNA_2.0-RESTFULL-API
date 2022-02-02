@@ -42,13 +42,13 @@ namespace API_VNA_2._0.Controllers
         [HttpPost("UpdateProduct")]
         public async Task<ActionResult> UpdateProduct(Product p)
         {
-            // Add new Client with bool response to confirm the success of operation
+            // Update Porduct with bool response to confirm the success of operation
             bool aux = Data.DataAccess.UpdateProduct(p);
 
             // Define Task Delay
             await Task.Delay(2000);
 
-            // Return Http code according the result of Add Client Method from data layer
+            // Return Http code according the result of Update Product Method from data layer
             if (aux == true) return Ok();
             else return Unauthorized();
         }
