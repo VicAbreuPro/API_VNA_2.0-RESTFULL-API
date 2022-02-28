@@ -56,18 +56,18 @@ namespace API_VNA_2._0.Controllers
         [HttpPost("UpdateClient")]
         public async Task<ActionResult> UpdateClient(Client c)
         {
-            // Add new Client with bool response to confirm the success of operation
+            // Update Client with bool response to confirm the success of operation
             bool aux = Data.DataAccess.UpdateClient(c);
 
             // Define Task Delay
             await Task.Delay(2000);
 
-            // Return Http code according the result of Add Client Method from data layer
+            // Return Http code according the result of Update Client Method from data layer
             if (aux == true) return Ok();
             else return Unauthorized();
         }
 
-        [HttpPost("Upload Image")]
+        [HttpPost("UploadImage")]
         public async Task<ActionResult> UploadClientImage()
         {
             var HttpRequest = Request.Form;
@@ -79,8 +79,12 @@ namespace API_VNA_2._0.Controllers
             img.name = fileName;
             img.data = new byte[file.Length];
 
+            bool aux = Data.DataAccess.AddImage(img);
+
             await Task.Delay(2000);
-            return Ok();
+
+            if (aux == true) return Ok();
+            else return Unauthorized();
         }
     }
 }
