@@ -66,5 +66,21 @@ namespace API_VNA_2._0.Controllers
             if (aux == true) return Ok();
             else return Unauthorized();
         }
+
+        [HttpPost("Upload Image")]
+        public async Task<ActionResult> UploadClientImage()
+        {
+            var HttpRequest = Request.Form;
+            var file = HttpRequest.Files[0];
+            string fileName = file.FileName;
+
+            Image img = new();
+
+            img.name = fileName;
+            img.data = new byte[file.Length];
+
+            await Task.Delay(2000);
+            return Ok();
+        }
     }
 }
