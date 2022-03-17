@@ -38,7 +38,7 @@ namespace API_VNA_2._0.Controllers
             else return Unauthorized();
         }
 
-        [HttpPost("UpdateProduct")]
+        [HttpPut("UpdateProduct")]
         public async Task<ActionResult> UpdateProduct(Product p)
         {
             // Update Porduct with bool response to confirm the success of operation

@@ -25,20 +25,6 @@ namespace API_VNA_2._0.Controllers
             return topLocal;
         }
 
-        [HttpGet("searchClient/")]
-        public string SearchClient(string client_id)
-        {
-            Client c = new Client();
-            //Clients.clientList = Data.DataAccess.GetClients(Clients.clientList, dt.Tables["clientes"]);
-            // Test List
-            foreach (var client in Clients.clientList)
-            {
-                if (client.id == client_id) c = client;
-            }
-            var json = JsonConvert.SerializeObject(c);
-            return json;
-        }
-
         [HttpPost("AddClient")]
         public async Task<ActionResult> PostClient(Client c)
         {
@@ -53,7 +39,7 @@ namespace API_VNA_2._0.Controllers
             else return Unauthorized();
         }
 
-        [HttpPost("UpdateClient")]
+        [HttpPut("UpdateClient")]
         public async Task<ActionResult> UpdateClient(Client c)
         {
             // Update Client with bool response to confirm the success of operation
@@ -65,23 +51,6 @@ namespace API_VNA_2._0.Controllers
             // Return Http code according the result of Update Client Method from data layer
             if (aux == true) return Ok();
             else return Unauthorized();
-        }
-
-        [HttpPost("testForm")]
-        public async Task<ActionResult> TestForm([FromForm] Client c)
-        {
-            string resp = "";
-            string nameAux = "admin";
-            string idAux = "10";
-            string locationAux = "braga";
-
-            if (c.id == idAux && c.name == nameAux && c.location == locationAux) resp = "corret!";
-            else resp = "incorrect";
-
-            // Define Task Delay
-            await Task.Delay(2000);
-
-            return Ok(resp);
         }
     }
 }
