@@ -9,20 +9,19 @@ namespace API_VNA_2._0.Controllers
     [Route("Product")]
     public class ProductController : ControllerBase
     {
-        public static DataSet ?dt;
-
-        public ProductController()
-        {
-            dt = Data.DataAccess.AllData();
-        }
-
         [HttpGet("ProductList")]
         public string P_List()
         {
-            //Preencher Lista de Produtos com uso do DataSet();
-            Products.productList = Data.DataAccess.GetProducts(Products.productList, dt.Tables["produtos"]);
+            Products.productList = Data.DataAccess.GetProducts();
             var json = JsonConvert.SerializeObject(Products.productList);
             return json;
+        }
+
+        [HttpGet("TopStockProduct")]
+        public string tp_Product()
+        {
+            string topProduct = Products.TopProductStock();
+            return topProduct;
         }
 
         [HttpPost("AddProduct")]

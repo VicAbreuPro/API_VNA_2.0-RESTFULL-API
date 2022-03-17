@@ -9,27 +9,27 @@ namespace API_VNA_2._0.Controllers
     [ApiController]
     public class ClientController : ControllerBase
     {
-        public static DataSet ?dt;
-
-        public ClientController()
-        {
-            dt = Data.DataAccess.AllData();
-        }
-
         [HttpGet("ClientList")]
         public string C_List()
         {
-            Clients.clientList = Data.DataAccess.GetClients(Clients.clientList, dt.Tables["clientes"]);
+            Clients.clientList = Data.DataAccess.GetClients();
             var json = JsonConvert.SerializeObject(Clients.clientList);
             return json;
 
+        }
+
+        [HttpGet("TopClientLocation")]
+        public string TopCliLocal()
+        {
+            string topLocal = Clients.topClientLocation();
+            return topLocal;
         }
 
         [HttpGet("searchClient/")]
         public string SearchClient(string client_id)
         {
             Client c = new Client();
-            Clients.clientList = Data.DataAccess.GetClients(Clients.clientList, dt.Tables["clientes"]);
+            //Clients.clientList = Data.DataAccess.GetClients(Clients.clientList, dt.Tables["clientes"]);
             // Test List
             foreach (var client in Clients.clientList)
             {
@@ -67,20 +67,21 @@ namespace API_VNA_2._0.Controllers
             else return Unauthorized();
         }
 
-        [HttpPost("Upload Image")]
-        public async Task<ActionResult> UploadClientImage()
+        [HttpPost("testForm")]
+        public async Task<ActionResult> TestForm([FromForm] Client c)
         {
-            var HttpRequest = Request.Form;
-            var file = HttpRequest.Files[0];
-            string fileName = file.FileName;
+            string resp = "";
+            string nameAux = "admin";
+            string idAux = "10";
+            string locationAux = "braga";
 
-            Image img = new();
+            if (c.id == idAux && c.name == nameAux && c.location == locationAux) resp = "corret!";
+            else resp = "incorrect";
 
-            img.name = fileName;
-            img.data = new byte[file.Length];
-
+            // Define Task Delay
             await Task.Delay(2000);
-            return Ok();
+
+            return Ok(resp);
         }
     }
 }

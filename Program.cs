@@ -2,14 +2,22 @@ using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
+var MyAllowSpecificOrigins = "AllowOrigin";
 
 // Add services to the container.
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(
     c=> c.SwaggerDoc("v1", new OpenApiInfo { Title = "API_VNA_2.0", Description = "DATA MANAGER API",Version = "v1" }));
+
+// Add CORS Policy
+builder.Services.AddCors(c =>
+{
+    c.AddPolicy(name: MyAllowSpecificOrigins, options => { options.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod(); });
+});
 
 var app = builder.Build();
 
@@ -27,18 +35,13 @@ app.UseSwaggerUI(c =>
 
 });
 
+// Enable CORS
+app.UseCors(MyAllowSpecificOrigins);
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(
-        Path.Combine(Directory.GetCurrentDirectory(),
-        "Images")),
-    RequestPath="/Images"
-});
 
 app.Run();

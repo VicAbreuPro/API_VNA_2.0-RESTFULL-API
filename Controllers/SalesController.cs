@@ -9,19 +9,10 @@ namespace API_VNA_2._0.Controllers
     [ApiController]
     public class SalesController : Controller
     {
-        public static DataSet dt;
-
-        public SalesController()
-        {
-            dt = Data.DataAccess.AllData();
-        }
-
-
         [HttpGet("SalesList")]
         public string S_List()
         {
-            //Preencher Lista de Produtos com uso do DataSet();
-            Sales.saleList = Data.DataAccess.GetSales(Sales.saleList, dt.Tables["vendas"]);
+            Sales.saleList = Data.DataAccess.GetSales();
             var json = JsonConvert.SerializeObject(Sales.saleList);
             return json;
         }

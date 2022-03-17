@@ -3,7 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API_VNA_2.0", "API_VNA_2.0.csproj", "{185237F2-9C99-4A49-88D2-EEFD300A599C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API_VNA_2.0", "API_VNA_2.0.csproj", "{185237F2-9C99-4A49-88D2-EEFD300A599C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{30088A03-B8A8-41E0-92DB-E7380E452C57}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
