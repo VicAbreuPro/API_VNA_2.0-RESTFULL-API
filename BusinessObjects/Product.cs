@@ -7,9 +7,9 @@ namespace API_VNA_2._0.BusinessObjects
     [Serializable]
     public class Product
     {
-        public int ?serial { get; set; }
-        public int ?valor { get; set; }
-        public string ?model { get; set; }
+        public int serial { get; set; }
+        public int valor { get; set; }
+        public string? model { get; set; }
 
         public Product()
         {

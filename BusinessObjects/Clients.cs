@@ -16,14 +16,14 @@ namespace API_VNA_2._0.BusinessObjects
             get { return clientList; }
         }
 
-        public static string topClientLocation()
+        public static string TopClientLocation()
         {
             clientList = Data.DataAccess.GetClients();
 
             // Variaveis Axuliares
-            string topLocal = "";
+            string? topLocal = "";
             int counter = 0;
-            List<Location> locationList = new();
+            List<TopAux> locationList = new();
 
             // Percorrer lista de clientes e adiconar cada localização em uma nova lista
             for (int i = 0; i < clientList.Count; i++)
@@ -32,13 +32,13 @@ namespace API_VNA_2._0.BusinessObjects
                 int aux = 0;
 
                 // Criar novo objeto tipo localização
-                Location local = new();
+                TopAux local = new();
 
                 // Atribuir localização do cliente atual a um novo objeto localização
-                local.localName = clientList[i].location;
+                local.Name = clientList[i].location;
 
                 // Adicionar um valor a frequencia de aparência da presente localização
-                local.frequency = 1;
+                local.Frequency = 1;
 
                 // Verificar se é o primeiro elemento da pesquisa
                 if (i == 0)
@@ -52,10 +52,10 @@ namespace API_VNA_2._0.BusinessObjects
                     foreach (var local_aux in locationList)
                     {
                         // Verificar as localização do cliente atual com as localizações existentes no registos das mesmas
-                        if (local_aux.localName == clientList[i].location)
+                        if (local_aux.Name == clientList[i].location)
                         {
                             // Caso a localização se repita, a sua frequência é atualizada
-                            local_aux.frequency++;
+                            local_aux.Frequency++;
 
                             //Verificador auxiliar para adição de nova localização
                             aux = 1;
@@ -72,15 +72,15 @@ namespace API_VNA_2._0.BusinessObjects
                 // Adicionar um valor ao contador na primeira localização analisada
                 if (i == 0)
                 {
-                    counter = locationList[i].frequency;
-                    topLocal = locationList[i].localName;
+                    counter = locationList[i].Frequency;
+                    topLocal = locationList[i].Name;
                 }
 
                 // Se nao for o primeiro item da lista e a frequência for maior que o valor do contador, então atualizar novo valor do mesmo
-                if (i != 0 && locationList[i].frequency > counter)
+                if (i != 0 && locationList[i].Frequency > counter)
                 {
-                    counter = locationList[i].frequency;
-                    topLocal = locationList[i].localName;
+                    counter = locationList[i].Frequency;
+                    topLocal = locationList[i].Name;
                 }
             }
             return topLocal;

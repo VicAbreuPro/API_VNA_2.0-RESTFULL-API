@@ -17,12 +17,12 @@ namespace API_VNA_2._0.BusinessObjects
 
         public static string TopProductStock()
         {
-            string topProduct = "";
+            string? topProduct = "";
 
             productList = Data.DataAccess.GetProducts();
 
             int counter = 0;
-            List<ProductAux> listAux = new();
+            List<TopAux> listAux = new();
 
             // Percorrer lista de produtos e adiconar cada modelo em uma nova lista
             for (int i = 0; i < productList.Count; i++)
@@ -31,13 +31,13 @@ namespace API_VNA_2._0.BusinessObjects
                 int aux = 0;
 
                 // Criar novo objeto tipo produto auxiliar
-                ProductAux tp_p = new ProductAux();
+                TopAux tp_p = new();
 
                 // Atribuir localização do cliente atual a um novo objeto localização
-                tp_p.model = productList[i].model;
+                tp_p.Name = productList[i].model;
 
                 // Adicionar um valor a frequencia de presença do produto atual
-                tp_p.frequency = 1;
+                tp_p.Frequency = 1;
 
                 // Verificar se é o primeiro elemento da pesquisa
                 if (i == 0)
@@ -51,10 +51,10 @@ namespace API_VNA_2._0.BusinessObjects
                     foreach (var p_aux in listAux)
                     {
                         // Verificar os modelos dos produtos atuais com os produtos existentes na lista principal
-                        if (p_aux.model == productList[i].model)
+                        if (p_aux.Name == productList[i].model)
                         {
                             // Caso o modelo se repita, a sua frequência de presença é atualizada
-                            p_aux.frequency++;
+                            p_aux.Frequency++;
 
                             //Verificador auxiliar para adição de um novo produto
                             aux = 1;
@@ -71,15 +71,15 @@ namespace API_VNA_2._0.BusinessObjects
                 // Adicionar um valor ao contador no primeiro produto analisado
                 if (i == 0)
                 {
-                    counter = listAux[i].frequency;
-                    topProduct = listAux[i].model;
+                    counter = listAux[i].Frequency;
+                    topProduct = listAux[i].Name;
                 }
 
                 // Se nao for o primeiro item da lista e a frequência for maior que o valor do contador, então atualizar novo valor do mesmo
-                if (i != 0 && listAux[i].frequency > counter)
+                if (i != 0 && listAux[i].Frequency > counter)
                 {
-                    counter = listAux[i].frequency;
-                    topProduct = listAux[i].model;
+                    counter = listAux[i].Frequency;
+                    topProduct = listAux[i].Name;
                 }
             }
             return topProduct;

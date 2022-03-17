@@ -15,7 +15,7 @@ namespace API_VNA_2._0.Controllers
         public ActionResult<string> UserType(string token)
         {
             int type = Data.DataAccess.VerifyUser(token);
-            if(type != 0) return type.ToString();
+            if(type != 0) return Ok(type.ToString());
             else return NotFound(type);
         }
 

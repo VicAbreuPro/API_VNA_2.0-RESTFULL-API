@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace API_VNA_2._0.BusinessObjects
 {
-    public class Location
+    public class TopAux
     {
-        public string localName { get; set; }
-        public int frequency { get; set; }
+        public string? Name { get; set; }
+        public int Frequency { get; set; }
 
-        public Location() { } //Default Constructor
+        public TopAux() { } //Default Constructor
     }
 }

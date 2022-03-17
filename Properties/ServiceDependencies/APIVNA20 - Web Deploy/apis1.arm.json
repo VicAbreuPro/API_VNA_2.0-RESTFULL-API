@@ -82,6 +82,7 @@
                 },
                 "virtualNetworkType": "None",
                 "certificates": null,
+                "enableClientCertificate": false,
                 "apiVersionConstraint": {
                   "minApiVersion": null
                 }
@@ -96,11 +97,11 @@
               "type": "Microsoft.ApiManagement/service/apis",
               "name": "APIVNA20api/APIVNA20",
               "properties": {
-                "displayName": "APIVNA20",
+                "displayName": "API_VNA_2.0",
                 "apiRevision": "1",
-                "description": null,
+                "description": "DATA MANAGER API",
                 "subscriptionRequired": true,
-                "serviceUrl": null,
+                "serviceUrl": "https://apivna20.azurewebsites.net",
                 "path": "",
                 "protocols": [
                   "https"

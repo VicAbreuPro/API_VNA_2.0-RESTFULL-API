@@ -3,26 +3,20 @@
     [Serializable]
     public class User_tk
     {
-        public string id { get; set; }
+        public string? id { get; set; }
         public int type { get; set; }
-        public string ?token { get; set; }
+        public string? token { get; set; }
 
         /// <summary>
         /// Default Constructor
         /// </summary>
         public User_tk() { }
 
-        public User_tk(string id_inp, int type_inp, string toke_inp)
+        public User_tk(string? id_inp, int type_inp, string? toke_inp)
         {
             this.id = id_inp;
             this.type = type_inp;
             this.token = toke_inp;
         }
-        
-
-       /* public static bool Verify_tk(User_tk user_tk)
-        {
-
-        }*/
     }
 }

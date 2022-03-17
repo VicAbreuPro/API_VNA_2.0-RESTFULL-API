@@ -7,18 +7,27 @@ namespace API_VNA_2._0.Data
     public class DataAccess
     {
         #region GET DATA TABLES FROM DB
+
+        /// <summary>
+        /// Access Data Base and return Clients Table
+        /// </summary>
         public static DataTable GetClientTable()
         {
+            // New empty DataTable
             DataTable dt = new();
 
+            // Auxiliary variable for sql statement
             var sql_select = "SELECT * FROM cli_app.Cliente";
 
             try
             {
+                // Create new connection to mysql using connection string
                 using (var connection = new MySqlConnection(Conn.strConn))
                 {
+                    // Create new data adapter varible to get table result of sql select statement
                     using (var data = new MySqlDataAdapter(sql_select, connection))
                     {
+                        // Fill data table with content from data adapater variable
                         data.Fill(dt);
                     }
                 }
@@ -28,21 +37,30 @@ namespace API_VNA_2._0.Data
                 // Return empty table
                 return dt;
             }
+            // Return Data Table
             return dt;
         }
 
+        /// <summary>
+        /// Access Data Base and return Products Table
+        /// </summary>
         public static DataTable GetProductsTable()
         {
+            // New empty DataTable
             DataTable dt = new();
 
+            // Auxiliary variable for sql statement
             var sql_select = "SELECT * FROM cli_app.Produtos";
 
             try
             {
+                // Create new connection to mysql using connection string
                 using (var connection = new MySqlConnection(Conn.strConn))
                 {
+                    // Create new data adapter varible to get table result of sql select statement
                     using (var data = new MySqlDataAdapter(sql_select, connection))
                     {
+                        // Fill data table with content from data adapater variable
                         data.Fill(dt);
                     }
                 }
@@ -52,21 +70,30 @@ namespace API_VNA_2._0.Data
                 // Return empty table
                 return dt;
             }
+            // Return Data Table
             return dt;
         }
 
+        /// <summary>
+        /// Access Data Base and return Sales Table
+        /// </summary>
         public static DataTable GetSalesTable()
         {
+            // New empty DataTable
             DataTable dt = new();
 
+            // Auxiliary variable for sql statement
             var sql_select = "SELECT * FROM cli_app.Sales";
 
             try
             {
+                // Create new connection to mysql using connection string
                 using (var connection = new MySqlConnection(Conn.strConn))
                 {
+                    // Create new data adapter varible to get table result of sql select statement
                     using (var data = new MySqlDataAdapter(sql_select, connection))
                     {
+                        // Fill data table with content from data adapater variable
                         data.Fill(dt);
                     }
                 }
@@ -76,29 +103,7 @@ namespace API_VNA_2._0.Data
                 // Return empty table
                 return dt;
             }
-            return dt;
-        }
-
-        public static DataTable GetUsers_tk()
-        {
-            DataTable dt = new DataTable();
-
-            var select = "SELECT * FROM internal.accesstoken";
-
-            try
-            {
-                using(var connection = new MySqlConnection(Conn.strConn2))
-                {
-                    connection.Open();
-                    using(var data = new MySqlDataAdapter(select, connection))
-                    {
-                        data.Fill(dt);
-                    }
-                }
-            }
-            catch (Exception){
-                // Do Action
-            }
+            // Return Data Table
             return dt;
         }
 
@@ -109,7 +114,6 @@ namespace API_VNA_2._0.Data
         /// <summary>
         /// Retornar List De Clientes
         /// </summary>
-        /// <param name="c" name="dt"<></param>
         public static List<Client> GetClients()
         {
             DataTable dt = GetClientTable();
@@ -123,9 +127,6 @@ namespace API_VNA_2._0.Data
             c = (from DataRow dr in dt.Rows select new Client(id = dr["client_id"].ToString(), name = dr["client_name"].ToString(), location = dr["client_location"].ToString(), date = dr["since_date"].ToString())).ToList();
             return c;
         }
-
-       
-
 
         /// <summary>
         /// Obter Lista de Vendas da Base de Dados
@@ -177,8 +178,8 @@ namespace API_VNA_2._0.Data
             int weight;
             int height;
             int year;
-            string model;
-            string color;
+            string? model;
+            string? color;
 
             // LINQ
             p = (from DataRow dr in dt.Rows select new ProductDetail(model = dr["model"].ToString(), weight = Convert.ToInt32(dr["weight"]), height = Convert.ToInt32(dr["height"]), year = Convert.ToInt32(dr["yearFab"]), color = dr["color"].ToString())).ToList();
@@ -191,9 +192,9 @@ namespace API_VNA_2._0.Data
         {
             List<User_tk> userList = new();
 
-            string id;
+            string? id;
             int type;
-            string token;
+            string? token;
 
             // LINQ
             userList = (from DataRow dr in dt.Rows select new User_tk(id = dr["token_id"].ToString(), type = Convert.ToInt32(dr["token_type"]), token = dr["token"].ToString())).ToList();
@@ -465,16 +466,31 @@ namespace API_VNA_2._0.Data
         #endregion
 
         #region INTERNAL AUX FUNCTIONS
-        public static int VerifyUser(string tk) { 
-        
-            DataTable dt = GetUsers_tk();
-            List<User_tk> tk_list = Users(dt);
 
-            foreach(var token in tk_list)
+        /// <summary>
+        /// Access Data Base and return Users
+        /// </summary>
+        public static int VerifyUser(string token)
+        {
+            var select = "SELECT token_type FROM internal.accesstoken WHERE token = @token";
+            int aux = 0;
+            try
             {
-                if(tk == token.token) return token.type;
+                using (var connection = new MySqlConnection(Conn.strConn2))
+                {
+                    MySqlCommand select_Aux = new MySqlCommand(select, connection);
+
+                    select_Aux.Parameters.AddWithValue("@token", token);
+                    connection.Open();
+
+                    aux = Convert.ToInt32(select_Aux.ExecuteScalar());
+                }
             }
-            return 0;
+            catch (Exception)
+            {
+                // Do Action
+            }
+            return aux;
         }
 
         #endregion

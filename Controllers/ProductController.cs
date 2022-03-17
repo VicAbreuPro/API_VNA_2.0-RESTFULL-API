@@ -18,10 +18,11 @@ namespace API_VNA_2._0.Controllers
         }
 
         [HttpGet("TopStockProduct")]
-        public string tp_Product()
+        public ActionResult<string> Tp_Product()
         {
             string topProduct = Products.TopProductStock();
-            return topProduct;
+            if (topProduct != null) return Ok(topProduct);
+            return Unauthorized();
         }
 
         [HttpPost("AddProduct")]
@@ -38,7 +39,7 @@ namespace API_VNA_2._0.Controllers
             else return Unauthorized();
         }
 
-        [HttpPost("UpdateProduct")]
+        [HttpPut("UpdateProduct")]
         public async Task<ActionResult> UpdateProduct(Product p)
         {
             // Update Porduct with bool response to confirm the success of operation
