@@ -107,6 +107,7 @@ namespace API_VNA_2._0.Data
             return dt;
         }
 
+        
         #endregion
 
         #region GET DATA LIST
@@ -127,6 +128,8 @@ namespace API_VNA_2._0.Data
             c = (from DataRow dr in dt.Rows select new Client(id = dr["client_id"].ToString(), name = dr["client_name"].ToString(), location = dr["client_location"].ToString(), date = dr["since_date"].ToString())).ToList();
             return c;
         }
+
+
 
         /// <summary>
         /// Obter Lista de Vendas da Base de Dados
@@ -241,7 +244,8 @@ namespace API_VNA_2._0.Data
             }
         }
 
-       
+        
+
         public static bool AddProduct(Product p)
         {
             // Atribuir a uma variável o comando SQL para inserir os dados e seus respetivos valores
@@ -491,6 +495,133 @@ namespace API_VNA_2._0.Data
                 // Do Action
             }
             return aux;
+        }
+
+        public static DataTable get_test_table()
+        {
+            // New empty DataTable
+            DataTable dt = new();
+
+            // Auxiliary variable for sql statement
+            var sql_select = "SELECT * FROM wb.sales_aux";
+
+            try
+            {
+                // Create new connection to mysql using connection string
+                using (var connection = new MySqlConnection(Conn.strConn))
+                {
+                    // Create new data adapter varible to get table result of sql select statement
+                    using (var data = new MySqlDataAdapter(sql_select, connection))
+                    {
+                        // Fill data table with content from data adapater variable
+                        data.Fill(dt);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // Return empty table
+                return dt;
+            }
+            // Return Data Table
+            return dt;
+        }
+
+        public static List<Sale_Aux> Get_sale_Aux()
+        {
+            DataTable dt = get_test_table();
+            List<Sale_Aux> s = new List<Sale_Aux>();
+
+            string? name_aux;
+            string? model_aux;
+            string? factory_serial_aux;
+            string? serial_control_board_aux;
+            string? serial_suply_power_aux;
+            string? wb_serial_aux;
+            string? data_buy_aux;
+            string? start_warranty_aux;
+            string? warranty_type_aux;
+            string? ship_local_aux;
+            string? seller_aux;
+
+            s = (from DataRow dr in dt.Rows
+                 select new Sale_Aux(
+            name_aux = dr["client_name"].ToString(),
+            model_aux = dr["equipment"].ToString(),
+            factory_serial_aux = dr["serial_factory"].ToString(),
+            serial_control_board_aux = dr["serial_control_board"].ToString(),
+            serial_suply_power_aux = dr["serial_power_suply"].ToString(),
+            wb_serial_aux = dr["wb_serial"].ToString(),
+            data_buy_aux = dr["data_buy"].ToString(),
+            start_warranty_aux = dr["warranty_start_date"].ToString(),
+            warranty_type_aux = dr["warranty"].ToString(),
+            ship_local_aux = dr["local_ship"].ToString(),
+            seller_aux = dr["seller"].ToString())).ToList();
+
+            return s;
+        }
+
+        public static int get_id_sales_aux(string name)
+        {
+            var cmd = "SELEC id FROM wb.clients WHERE name = @name_aux";
+
+            using(var connection = new MySqlConnection(Conn.strConn3))
+            {
+                MySqlCommand cmd_aux = new MySqlCommand(cmd, connection);
+                cmd_aux.Parameters.AddWithValue("@name_aux", name);
+
+                connection.Open();
+
+                int id = Convert.ToInt32(cmd_aux.ExecuteScalar());
+                return id;
+
+            }
+        }
+
+        /// <summary>
+        /// Adicionar Cliente a base de dados
+        /// </summary>
+        /// <param name="c"<></param>
+        public static bool Add_Test(Sale_Aux s)
+        {
+            // Atribuir a uma variável o comando SQL para inserir os dados e seus respetivos valores
+            var sqlInsert = "INSERT INTO wb.sales_aux(client_id, equipment, serial_factory, serial_control_board, serial_power_suply, wb_serial, data_buy, warranty, warranty_start_date, localship, seller) VALUES(@s_client_id, @s_equipment, @s_serial_factory, @s_serial_control_board, @s_serial_power_suply, @s_wb_serial, @s_data_buy, @s_warranty, @s_warrant_start_date, @s_localship, @s_seller)";
+
+            // Iniciar processo de conexão a ao servidor com auxilio da Classe Conn que possui os dados de conexão
+            try
+            {
+                using (var connection = new MySqlConnection(Conn.strConn))
+                {
+                    // Criar novo objeto "comando" para executar comando SQL criado
+                    MySqlCommand sqlInsert_Aux = new MySqlCommand(sqlInsert, connection);
+
+                    //Adicionar parâmetros ao comando de acordo com as variáveis de entrada (método mais seguro)
+                    sqlInsert_Aux.Parameters.AddWithValue("@s_client_id", s.cli_id);
+                    sqlInsert_Aux.Parameters.AddWithValue("@s_equipment", s.model);
+                    sqlInsert_Aux.Parameters.AddWithValue("@s_serial_factory", s.factory_serial);
+                    sqlInsert_Aux.Parameters.AddWithValue("@s_serial_control_board", s.serial_control_board);
+                    sqlInsert_Aux.Parameters.AddWithValue("@s_serial_power_suply", s.serial_suply_power);
+                    sqlInsert_Aux.Parameters.AddWithValue("@s_wb_serial", s.wb_serial);
+                    sqlInsert_Aux.Parameters.AddWithValue("@s_data_buy", s.data_buy);
+                    sqlInsert_Aux.Parameters.AddWithValue("@s_warranty", s.warranty_type);
+                    sqlInsert_Aux.Parameters.AddWithValue("@s_warranty_start_date", s.start_warranty);
+                    sqlInsert_Aux.Parameters.AddWithValue("@s_localship", s.ship_local);
+                    sqlInsert_Aux.Parameters.AddWithValue("@s_seller", s.seller);
+
+                    // Abrir conexão com base de dados
+                    connection.Open();
+
+                    // Executar comando SQL
+                    int aux = Convert.ToInt32(sqlInsert_Aux.ExecuteNonQuery());
+                    if (aux != 0) return true;
+                    else return false;
+                }
+            }
+            catch (Exception e)
+            {
+                throw e;
+                // Exibir mensagem do erro específico
+            }
         }
 
         #endregion
