@@ -1,4 +1,6 @@
-﻿using System.Data;
+﻿using API_VNA_2._0.Data;
+using System.Data;
+using MySql.Data.MySqlClient;
 
 namespace API_VNA_2._0.BusinessObjects
 {
@@ -8,18 +10,112 @@ namespace API_VNA_2._0.BusinessObjects
     [Serializable]
     public class Products
     {
-        public static List<Product> productList = new();
-
-        public static List<Product> ProductList
+        /// <summary>
+        /// Obter Lista de Produtos da Base de Dados
+        /// </summary>
+        public static List<Product> GetProducts()
         {
-            get { return productList; }
+            DataTable dt = DataAccess.GetProductsTable();
+            List<Product> p = new();
+
+            int serial;
+            string? model;
+            int valor;
+
+            // LINQ
+            p = (from DataRow dr in dt.Rows select new Product(serial = Convert.ToInt32(dr["serial_number"]), model = dr["model"].ToString(), valor = Convert.ToInt32(dr["valor"]))).ToList();
+
+            // Return list of sales
+            return p;
+        }
+        public static bool AddProduct(Product p)
+        {
+            // Atribuir a uma variável o comando SQL para inserir os dados e seus respetivos valores
+            var sqlInsert = "INSERT INTO cli_app.Produtos(serial_number, model, valor) VALUES(@serial, @model, @value)";
+
+            // Iniciar processo de conexão a ao servidor com auxilio da Classe Conn que possui os dados de conexão
+            try
+            {
+                using (var connection = new MySqlConnection(Conn.strConn))
+                {
+                    // Criar novo objeto "comando" para executar comando SQL criado
+                    MySqlCommand sqlInsert_Aux = new MySqlCommand(sqlInsert, connection);
+
+                    //Adicionar parâmetros ao comando de acordo com as variáveis de entrada (método mais seguro)
+                    sqlInsert_Aux.Parameters.AddWithValue("@serial", p.serial);
+                    sqlInsert_Aux.Parameters.AddWithValue("@model", p.model);
+                    sqlInsert_Aux.Parameters.AddWithValue("@value", p.valor);
+
+                    // Abrir conexão com base de dados
+                    connection.Open();
+
+                    // Executar comando SQL
+                    sqlInsert_Aux.ExecuteReader();
+                    return true;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+                // Exibir mensagem do erro específico
+            }
         }
 
-        public static string TopProductStock()
+        public static bool UpdateProduct(Product p)
+        {
+            // Variáveis Auxiliares
+            bool aux = false;
+            List<Product> productListAux = GetProducts();
+
+            // Verificar se Produto existe na base de dados
+            foreach (Product product in productListAux)
+            {
+                if (product.serial == p.serial)
+                {
+                    aux = true;
+                }
+            }
+
+            // Se Produto existir, atulizar as informações com os atributos do novo objeto do tipo Produto recebido
+            if (aux == true)
+            {
+                var sqlUpdate = "UPDATE cli_app.produtos SET model = @modelAux , valor = @valueAux WHERE serial_number = @serialAux";
+
+                // Iniciar processo de conexão a ao servidor com auxilio da Classe Conn que possui os dados de conexão
+                try
+                {
+                    using (var connection = new MySqlConnection(Conn.strConn))
+                    {
+                        // Criar novo objeto "comando" para executar comando SQL criado
+                        MySqlCommand sqlInsert_Aux = new MySqlCommand(sqlUpdate, connection);
+
+                        //Adicionar parâmetros ao comando de acordo com as variáveis de entrada (método mais seguro)
+                        sqlInsert_Aux.Parameters.AddWithValue("@serialAux", p.serial);
+                        sqlInsert_Aux.Parameters.AddWithValue("@modelAux", p.model);
+                        sqlInsert_Aux.Parameters.AddWithValue("@valueAux", p.valor);
+
+                        // Abrir conexão com base de dados
+                        connection.Open();
+
+                        // Executar comando SQL
+                        sqlInsert_Aux.ExecuteReader();
+                        return true;
+                    }
+                }
+                catch (Exception)
+                {
+                    return false;
+                    // Exibir mensagem do erro específico
+                }
+            }
+            else return false;
+        }
+
+        public static string? TopProductStock()
         {
             string? topProduct = "";
 
-            productList = Data.DataAccess.GetProducts();
+            List<Product> productList = GetProducts();
 
             int counter = 0;
             List<TopAux> listAux = new();

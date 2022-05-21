@@ -10,17 +10,17 @@ namespace API_VNA_2._0.Controllers
     public class SalesController : Controller
     {
         [HttpGet("SalesList")]
-        public string S_List()
+        public ActionResult<string> S_List()
         {
-            Sales.saleList = Data.DataAccess.GetSales();
-            var json = JsonConvert.SerializeObject(Sales.saleList);
-            return json;
+            List<Sales_view> list = Sales_view.GetSales();
+            if(list != null) return Ok(JsonConvert.SerializeObject(list));
+            else return Unauthorized("faile to fecth");
         }
 
         [HttpGet("TopSaleProduct")]
         public ActionResult<string> TopSaleP()
         {
-            string result = Sales.TopSalesProduct();
+            string? result = Sales_view.TopSalesProduct();
             if(result != null) return Ok(result);
             else return Unauthorized();
         }
@@ -29,7 +29,7 @@ namespace API_VNA_2._0.Controllers
         public ActionResult<string> YearSalesAmount()
         {
             // Get Sales Amount from current year
-            var aux = Sales.YearlySale();
+            var aux = Sales_view.YearlySale();
 
             // Return result
             if (aux != 0) return Ok(aux.ToString());
@@ -37,31 +37,25 @@ namespace API_VNA_2._0.Controllers
         }
 
         [HttpPost("AddSale")]
-        public async Task<ActionResult> PostSale(Sale s)
+        public ActionResult<string> PostSale(Sale s)
         {
             // Add new Sale with bool response to confirm the success of operation
-            bool aux = Data.DataAccess.AddSale(s);
-
-            // Define Task Delay
-            await Task.Delay(2000);
+            bool aux = Sale.AddSale(s);
 
             // Return Http code according the result of Add Sale Method from data layer
-            if (aux == true) return Ok();
-            else return Unauthorized();
+            if (aux == true) return Ok("success");
+            else return Unauthorized("failed to add sale");
         }
 
         [HttpPut("UpdateSale")]
-        public async Task<ActionResult> UpdateSale(Sale s)
+        public ActionResult<string> UpdateSale(Sale s)
         {
             // Update Sale with bool response to confirm the success of operation
-            bool aux = Data.DataAccess.UpdateSale(s);
-
-            // Define Task Delay
-            await Task.Delay(2000);
+            bool aux = Sale.UpdateSale(s);
 
             // Return Http code according the result of Update Sale Method from data layer
-            if (aux == true) return Ok();
-            else return Unauthorized();
+            if (aux == true) return Ok("success");
+            else return Unauthorized("failed to update");
         }
     }
 }
