@@ -6,94 +6,145 @@ namespace API_VNA_2._0.Data
 {
     public class DataAccess
     {
-        #region GET DATA
-        public static DataSet AllData()
-        {
-            DataSet dt = new DataSet();
-
-            dt = AllDataAux(dt);
-
-            return dt;
-        }
+        #region GET DATA TABLES FROM DB
 
         /// <summary>
-        /// Retornar todos os Clientes e Produtos da base de dados
+        /// Access Data Base and return Clients Table
         /// </summary>
-        /// <param name="dt"<></param>
-        public static DataSet AllDataAux(DataSet dt)
+        public static DataTable GetClientTable()
         {
-            // Criar nova variavel para comando SQL
-            var sql_sales = "SELECT * FROM cli_app.Sales";
-            var sql_c = "SELECT * FROM cli_app.Cliente";
-            var sql_p = "SELECT * FROM cli_app.Produtos";
-            var sql_P_Detail = "SELECT * FROM cli_app.productdetail";
+            // New empty DataTable
+            DataTable dt = new();
 
-            // Conectar com base de Dados configurada na Clase Conn
+            // Auxiliary variable for sql statement
+            var sql_select = "SELECT * FROM cli_app.Cliente";
+
             try
             {
-                // Abrir conexão com variavel Conn
+                // Create new connection to mysql using connection string
                 using (var connection = new MySqlConnection(Conn.strConn))
                 {
-                    // Data Adapater para trazer os dados da DB
-                    connection.Open();
-                    using (var dataN = new MySqlDataAdapter(sql_sales, connection)) // MySqlDataAdapater("command","MySqlConnection)
+                    // Create new data adapter varible to get table result of sql select statement
+                    using (var data = new MySqlDataAdapter(sql_select, connection))
                     {
-                        //Preencher os dados de dataN na variável previamente definida "dt"
-                        dataN.Fill(dt, "vendas");
-                    }
-
-                    using (var dataN_Aux = new MySqlDataAdapter(sql_c, connection))
-                    {
-                        dataN_Aux.Fill(dt, "clientes");
-                    }
-
-                    using (var dataN_Aux_1 = new MySqlDataAdapter(sql_p, connection))
-                    {
-                        dataN_Aux_1.Fill(dt, "produtos");
-                    }
-
-                    using (var dataN_Aux_2 = new MySqlDataAdapter(sql_P_Detail, connection))
-                    {
-                        dataN_Aux_2.Fill(dt, "p_detail");
+                        // Fill data table with content from data adapater variable
+                        data.Fill(dt);
                     }
                 }
             }
             catch (Exception)
             {
-                // Exibir mensagem do erro específico
-                // Dúvida : Colocar MessageBox com erro
+                // Return empty table
+                return dt;
             }
+            // Return Data Table
             return dt;
         }
 
         /// <summary>
+        /// Access Data Base and return Products Table
+        /// </summary>
+        public static DataTable GetProductsTable()
+        {
+            // New empty DataTable
+            DataTable dt = new();
+
+            // Auxiliary variable for sql statement
+            var sql_select = "SELECT * FROM cli_app.Produtos";
+
+            try
+            {
+                // Create new connection to mysql using connection string
+                using (var connection = new MySqlConnection(Conn.strConn))
+                {
+                    // Create new data adapter varible to get table result of sql select statement
+                    using (var data = new MySqlDataAdapter(sql_select, connection))
+                    {
+                        // Fill data table with content from data adapater variable
+                        data.Fill(dt);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // Return empty table
+                return dt;
+            }
+            // Return Data Table
+            return dt;
+        }
+
+        /// <summary>
+        /// Access Data Base and return Sales Table
+        /// </summary>
+        public static DataTable GetSalesTable()
+        {
+            // New empty DataTable
+            DataTable dt = new();
+
+            // Auxiliary variable for sql statement
+            var sql_select = "SELECT * FROM cli_app.Sales";
+
+            try
+            {
+                // Create new connection to mysql using connection string
+                using (var connection = new MySqlConnection(Conn.strConn))
+                {
+                    // Create new data adapter varible to get table result of sql select statement
+                    using (var data = new MySqlDataAdapter(sql_select, connection))
+                    {
+                        // Fill data table with content from data adapater variable
+                        data.Fill(dt);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // Return empty table
+                return dt;
+            }
+            // Return Data Table
+            return dt;
+        }
+
+        
+        #endregion
+
+        #region GET DATA LIST
+
+        /// <summary>
         /// Retornar List De Clientes
         /// </summary>
-        /// <param name="c" name="dt"<></param>
-        public static List<Client> GetClients(List<Client> c, DataTable dt)
+        public static List<Client> GetClients()
         {
-            string id;
-            string name;
-            string location;
-            string date;
+            DataTable dt = GetClientTable();
+            List<Client> c = new();
+
+            string? id;
+            string? name;
+            string? location;
+            string? date;
 
             c = (from DataRow dr in dt.Rows select new Client(id = dr["client_id"].ToString(), name = dr["client_name"].ToString(), location = dr["client_location"].ToString(), date = dr["since_date"].ToString())).ToList();
-
             return c;
         }
+
+
 
         /// <summary>
         /// Obter Lista de Vendas da Base de Dados
         /// </summary>
-        /// <param name="p" name="dt"<></param>
-        public static List<Sale> GetSales(List<Sale> p, DataTable dt)
+        public static List<Sale> GetSales()
         {
-            string sale_id;
+            DataTable dt = GetSalesTable();
+            List<Sale> p = new();
+
+            string? sale_id;
             int client_id;
             int serial;
-            string model;
+            string? model;
             int valor;
-            string date;
+            string? date;
 
             // LINQ
             p = (from DataRow dr in dt.Rows select new Sale(sale_id = dr["saleID"].ToString(), client_id = Convert.ToInt32(dr["client_id"]), serial = Convert.ToInt32(dr["serial_number"]), model = dr["model"].ToString(), date = dr["data_buy"].ToString(), valor = Convert.ToInt32(dr["valor"]))).ToList();
@@ -105,11 +156,13 @@ namespace API_VNA_2._0.Data
         /// <summary>
         /// Obter Lista de Produtos da Base de Dados
         /// </summary>
-        /// <param name="p" name="dt"<></param>
-        public static List<Product> GetProducts(List<Product> p, DataTable dt)
+        public static List<Product> GetProducts()
         {
+            DataTable dt = GetProductsTable();
+            List<Product> p = new();
+
             int serial;
-            string model;
+            string? model;
             int valor;
 
             // LINQ
@@ -128,14 +181,28 @@ namespace API_VNA_2._0.Data
             int weight;
             int height;
             int year;
-            string model;
-            string color;
+            string? model;
+            string? color;
 
             // LINQ
             p = (from DataRow dr in dt.Rows select new ProductDetail(model = dr["model"].ToString(), weight = Convert.ToInt32(dr["weight"]), height = Convert.ToInt32(dr["height"]), year = Convert.ToInt32(dr["yearFab"]), color = dr["color"].ToString())).ToList();
 
             // Return list of sales
             return p;
+        }
+
+        public static List<User_tk> Users(DataTable dt)
+        {
+            List<User_tk> userList = new();
+
+            string? id;
+            int type;
+            string? token;
+
+            // LINQ
+            userList = (from DataRow dr in dt.Rows select new User_tk(id = dr["token_id"].ToString(), type = Convert.ToInt32(dr["token_type"]), token = dr["token"].ToString())).ToList();
+
+            return userList;
         }
         #endregion
 
@@ -177,7 +244,8 @@ namespace API_VNA_2._0.Data
             }
         }
 
-       
+        
+
         public static bool AddProduct(Product p)
         {
             // Atribuir a uma variável o comando SQL para inserir os dados e seus respetivos valores
@@ -279,9 +347,7 @@ namespace API_VNA_2._0.Data
         {
             // Variáveis Auxiliares
             bool aux = false;
-            DataSet dt = AllData();
-            List<Client> clientList = new List<Client>();
-            List<Client> clientListAux = GetClients(clientList, dt.Tables["clientes"]);
+            List<Client> clientListAux = GetClients();
 
             // Verificar se Cliente existe na base de dados
             foreach (Client client in clientListAux)
@@ -332,9 +398,7 @@ namespace API_VNA_2._0.Data
         {
             // Variáveis Auxiliares
             bool aux = false;
-            DataSet dt = AllData();
-            List<Product> productList = new List<Product>();
-            List<Product> productListAux = GetProducts(productList, dt.Tables["produtos"]);
+            List<Product> productListAux = GetProducts();
 
             // Verificar se Produto existe na base de dados
             foreach (Product product in productListAux)
@@ -382,9 +446,7 @@ namespace API_VNA_2._0.Data
 
         public static bool UpdateSale(Sale s)
         {
-            DataSet dt = AllData();
-            List<Sale> saleList = new List<Sale>();
-            List<Sale> saleListAux = GetSales(saleList, dt.Tables["vendas"]);
+            List<Sale> saleListAux = GetSales();
             bool aux = false;
 
             foreach(Sale sale in saleListAux)
@@ -431,35 +493,163 @@ namespace API_VNA_2._0.Data
         }
 
         #endregion
-        public static bool VerifyUser(string name, string password)
+
+        #region INTERNAL AUX FUNCTIONS
+
+        /// <summary>
+        /// Access Data Base and return Users
+        /// </summary>
+        public static int VerifyUser(string token)
         {
-            DataSet dt = new DataSet();
-
-            var sqlSelect = "SELECT * from cli_app.user";
-
-            // Conectar com base de Dados configurada na Clase Conn
+            var select = "SELECT token_type FROM internal.accesstoken WHERE token = @token";
+            int aux = 0;
             try
             {
-                // Abrir conexão com variavel Conn
-                using (var connection = new MySqlConnection(Conn.strConn))
+                using (var connection = new MySqlConnection(Conn.strConn2))
                 {
-                    // Data Adapater para trazer os dados da DB
-                    connection.Open();
-                    using (var dataN = new MySqlDataAdapter(sqlSelect, connection)) // MySqlDataAdapater("command","MySqlConnection)
-                    {
-                        //Preencher os dados de dataN na variável previamente definida "dt"
-                        dataN.Fill(dt, "users");
-                    }
+                    MySqlCommand select_Aux = new MySqlCommand(select, connection);
 
+                    select_Aux.Parameters.AddWithValue("@token", token);
+                    connection.Open();
+
+                    aux = Convert.ToInt32(select_Aux.ExecuteScalar());
                 }
             }
             catch (Exception)
             {
-                // Exibir mensagem do erro específico
-                // Dúvida : Colocar MessageBox com erro
+                // Do Action
             }
-            return true;
+            return aux;
         }
+
+        public static DataTable get_test_table()
+        {
+            // New empty DataTable
+            DataTable dt = new();
+
+            // Auxiliary variable for sql statement
+            var sql_select = "SELECT * FROM wb.sales_aux";
+
+            try
+            {
+                // Create new connection to mysql using connection string
+                using (var connection = new MySqlConnection(Conn.strConn))
+                {
+                    // Create new data adapter varible to get table result of sql select statement
+                    using (var data = new MySqlDataAdapter(sql_select, connection))
+                    {
+                        // Fill data table with content from data adapater variable
+                        data.Fill(dt);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // Return empty table
+                return dt;
+            }
+            // Return Data Table
+            return dt;
+        }
+
+        public static List<Sale_Aux> Get_sale_Aux()
+        {
+            DataTable dt = get_test_table();
+            List<Sale_Aux> s = new List<Sale_Aux>();
+
+            string? name_aux;
+            string? model_aux;
+            string? factory_serial_aux;
+            string? serial_control_board_aux;
+            string? serial_suply_power_aux;
+            string? wb_serial_aux;
+            string? data_buy_aux;
+            string? start_warranty_aux;
+            string? warranty_type_aux;
+            string? ship_local_aux;
+            string? seller_aux;
+
+            s = (from DataRow dr in dt.Rows
+                 select new Sale_Aux(
+            name_aux = dr["client_name"].ToString(),
+            model_aux = dr["equipment"].ToString(),
+            factory_serial_aux = dr["serial_factory"].ToString(),
+            serial_control_board_aux = dr["serial_control_board"].ToString(),
+            serial_suply_power_aux = dr["serial_power_suply"].ToString(),
+            wb_serial_aux = dr["wb_serial"].ToString(),
+            data_buy_aux = dr["data_buy"].ToString(),
+            start_warranty_aux = dr["warranty_start_date"].ToString(),
+            warranty_type_aux = dr["warranty"].ToString(),
+            ship_local_aux = dr["local_ship"].ToString(),
+            seller_aux = dr["seller"].ToString())).ToList();
+
+            return s;
+        }
+
+        public static int get_id_sales_aux(string name)
+        {
+            var cmd = "SELEC id FROM wb.clients WHERE name = @name_aux";
+
+            using(var connection = new MySqlConnection(Conn.strConn3))
+            {
+                MySqlCommand cmd_aux = new MySqlCommand(cmd, connection);
+                cmd_aux.Parameters.AddWithValue("@name_aux", name);
+
+                connection.Open();
+
+                int id = Convert.ToInt32(cmd_aux.ExecuteScalar());
+                return id;
+
+            }
+        }
+
+        /// <summary>
+        /// Adicionar Cliente a base de dados
+        /// </summary>
+        /// <param name="c"<></param>
+        public static bool Add_Test(Sale_Aux s)
+        {
+            // Atribuir a uma variável o comando SQL para inserir os dados e seus respetivos valores
+            var sqlInsert = "INSERT INTO wb.sales_aux(client_id, equipment, serial_factory, serial_control_board, serial_power_suply, wb_serial, data_buy, warranty, warranty_start_date, localship, seller) VALUES(@s_client_id, @s_equipment, @s_serial_factory, @s_serial_control_board, @s_serial_power_suply, @s_wb_serial, @s_data_buy, @s_warranty, @s_warrant_start_date, @s_localship, @s_seller)";
+
+            // Iniciar processo de conexão a ao servidor com auxilio da Classe Conn que possui os dados de conexão
+            try
+            {
+                using (var connection = new MySqlConnection(Conn.strConn))
+                {
+                    // Criar novo objeto "comando" para executar comando SQL criado
+                    MySqlCommand sqlInsert_Aux = new MySqlCommand(sqlInsert, connection);
+
+                    //Adicionar parâmetros ao comando de acordo com as variáveis de entrada (método mais seguro)
+                    sqlInsert_Aux.Parameters.AddWithValue("@s_client_id", s.cli_id);
+                    sqlInsert_Aux.Parameters.AddWithValue("@s_equipment", s.model);
+                    sqlInsert_Aux.Parameters.AddWithValue("@s_serial_factory", s.factory_serial);
+                    sqlInsert_Aux.Parameters.AddWithValue("@s_serial_control_board", s.serial_control_board);
+                    sqlInsert_Aux.Parameters.AddWithValue("@s_serial_power_suply", s.serial_suply_power);
+                    sqlInsert_Aux.Parameters.AddWithValue("@s_wb_serial", s.wb_serial);
+                    sqlInsert_Aux.Parameters.AddWithValue("@s_data_buy", s.data_buy);
+                    sqlInsert_Aux.Parameters.AddWithValue("@s_warranty", s.warranty_type);
+                    sqlInsert_Aux.Parameters.AddWithValue("@s_warranty_start_date", s.start_warranty);
+                    sqlInsert_Aux.Parameters.AddWithValue("@s_localship", s.ship_local);
+                    sqlInsert_Aux.Parameters.AddWithValue("@s_seller", s.seller);
+
+                    // Abrir conexão com base de dados
+                    connection.Open();
+
+                    // Executar comando SQL
+                    int aux = Convert.ToInt32(sqlInsert_Aux.ExecuteNonQuery());
+                    if (aux != 0) return true;
+                    else return false;
+                }
+            }
+            catch (Exception e)
+            {
+                throw e;
+                // Exibir mensagem do erro específico
+            }
+        }
+
+        #endregion
     }
 }
 

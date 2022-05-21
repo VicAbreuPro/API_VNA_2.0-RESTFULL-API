@@ -9,21 +9,31 @@ namespace API_VNA_2._0.Controllers
     [ApiController]
     public class SalesController : Controller
     {
-        public static DataSet dt;
-
-        public SalesController()
-        {
-            dt = Data.DataAccess.AllData();
-        }
-
-
         [HttpGet("SalesList")]
         public string S_List()
         {
-            //Preencher Lista de Produtos com uso do DataSet();
-            Sales.saleList = Data.DataAccess.GetSales(Sales.saleList, dt.Tables["vendas"]);
+            Sales.saleList = Data.DataAccess.GetSales();
             var json = JsonConvert.SerializeObject(Sales.saleList);
             return json;
+        }
+
+        [HttpGet("TopSaleProduct")]
+        public ActionResult<string> TopSaleP()
+        {
+            string result = Sales.TopSalesProduct();
+            if(result != null) return Ok(result);
+            else return Unauthorized();
+        }
+
+        [HttpGet("YearAmount")]
+        public ActionResult<string> YearSalesAmount()
+        {
+            // Get Sales Amount from current year
+            var aux = Sales.YearlySale();
+
+            // Return result
+            if (aux != 0) return Ok(aux.ToString());
+            else return Unauthorized(aux.ToString());
         }
 
         [HttpPost("AddSale")]
@@ -40,7 +50,7 @@ namespace API_VNA_2._0.Controllers
             else return Unauthorized();
         }
 
-        [HttpPost("UpdateSale")]
+        [HttpPut("UpdateSale")]
         public async Task<ActionResult> UpdateSale(Sale s)
         {
             // Update Sale with bool response to confirm the success of operation
@@ -53,6 +63,5 @@ namespace API_VNA_2._0.Controllers
             if (aux == true) return Ok();
             else return Unauthorized();
         }
-
     }
 }

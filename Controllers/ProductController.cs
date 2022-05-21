@@ -9,20 +9,20 @@ namespace API_VNA_2._0.Controllers
     [Route("Product")]
     public class ProductController : ControllerBase
     {
-        public static DataSet ?dt;
-
-        public ProductController()
-        {
-            dt = Data.DataAccess.AllData();
-        }
-
         [HttpGet("ProductList")]
         public string P_List()
         {
-            //Preencher Lista de Produtos com uso do DataSet();
-            Products.productList = Data.DataAccess.GetProducts(Products.productList, dt.Tables["produtos"]);
+            Products.productList = Data.DataAccess.GetProducts();
             var json = JsonConvert.SerializeObject(Products.productList);
             return json;
+        }
+
+        [HttpGet("TopStockProduct")]
+        public ActionResult<string> Tp_Product()
+        {
+            string topProduct = Products.TopProductStock();
+            if (topProduct != null) return Ok(topProduct);
+            return Unauthorized();
         }
 
         [HttpPost("AddProduct")]
@@ -39,7 +39,7 @@ namespace API_VNA_2._0.Controllers
             else return Unauthorized();
         }
 
-        [HttpPost("UpdateProduct")]
+        [HttpPut("UpdateProduct")]
         public async Task<ActionResult> UpdateProduct(Product p)
         {
             // Update Porduct with bool response to confirm the success of operation

@@ -9,34 +9,20 @@ namespace API_VNA_2._0.Controllers
     [ApiController]
     public class ClientController : ControllerBase
     {
-        public static DataSet ?dt;
-
-        public ClientController()
-        {
-            dt = Data.DataAccess.AllData();
-        }
-
         [HttpGet("ClientList")]
         public string C_List()
         {
-            Clients.clientList = Data.DataAccess.GetClients(Clients.clientList, dt.Tables["clientes"]);
+            Clients.clientList = Data.DataAccess.GetClients();
             var json = JsonConvert.SerializeObject(Clients.clientList);
             return json;
-
         }
 
-        [HttpGet("searchClient/")]
-        public string SearchClient(string client_id)
+        [HttpGet("TopClientLocation")]
+        public ActionResult<string> TopCliLocal()
         {
-            Client c = new Client();
-            Clients.clientList = Data.DataAccess.GetClients(Clients.clientList, dt.Tables["clientes"]);
-            // Test List
-            foreach (var client in Clients.clientList)
-            {
-                if (client.id == client_id) c = client;
-            }
-            var json = JsonConvert.SerializeObject(c);
-            return json;
+            string topLocal = Clients.TopClientLocation();
+            if(topLocal != null) return Ok(topLocal);
+           else return Unauthorized();
         }
 
         [HttpPost("AddClient")]
@@ -53,7 +39,7 @@ namespace API_VNA_2._0.Controllers
             else return Unauthorized();
         }
 
-        [HttpPost("UpdateClient")]
+        [HttpPut("UpdateClient")]
         public async Task<ActionResult> UpdateClient(Client c)
         {
             // Update Client with bool response to confirm the success of operation
@@ -67,7 +53,7 @@ namespace API_VNA_2._0.Controllers
             else return Unauthorized();
         }
 
-        [HttpPost("UploadImage")]
+        [HttpPost("Upload Image")]
         public async Task<ActionResult> UploadClientImage()
         {
             var HttpRequest = Request.Form;
@@ -79,12 +65,8 @@ namespace API_VNA_2._0.Controllers
             img.name = fileName;
             img.data = new byte[file.Length];
 
-            bool aux = Data.DataAccess.AddImage(img);
-
             await Task.Delay(2000);
-
-            if (aux == true) return Ok();
-            else return Unauthorized();
+            return Ok();
         }
     }
 }
