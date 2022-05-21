@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using API_VNA_2._0.BusinessObjects;
+using Newtonsoft.Json;
 
 namespace API_VNA_2._0.Controllers
 {
@@ -27,7 +28,7 @@ namespace API_VNA_2._0.Controllers
             await Task.Delay(1500);
 
             // Return Http code according the result of Add Client Method from data layer
-            return Ok(count.ToString());
+            return Ok(JsonConvert.SerializeObject(sale_aux));
 
         }
     }

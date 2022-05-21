@@ -15,6 +15,6 @@ namespace API_VNA_2._0.Data
 
         static public string strConn = $"server={servidor};port={port};User Id={usuario};database={schemaCli_App};password={senha}";
         static public string strConn2 = $"server={servidor};port={port};User Id={usuario};database={schemaUser};password={senha}";
-        static public string strConn3 = $"server={server_2};port={port};User Id=root;database={schemaWB};password=root";
+        static public string strConn3 = $"server={server_2};port={port};User Id=root;database={schemaWB};password=hummerh14x4rally";
     }
 }

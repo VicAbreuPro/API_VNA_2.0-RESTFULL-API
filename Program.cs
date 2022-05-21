@@ -1,12 +1,10 @@
 using Microsoft.OpenApi.Models;
-using Microsoft.Extensions.FileProviders;
+
 
 var builder = WebApplication.CreateBuilder(args);
 var MyAllowSpecificOrigins = "AllowOrigin";
 
 // Add services to the container.
-
-
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(
@@ -23,16 +21,16 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "API_VNA v1");
+        //c.RoutePrefix = string.Empty;
 
+    });
 }
 
-app.UseSwagger();
-app.UseSwaggerUI(c =>
-{
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "API_VNA v1");
-    c.RoutePrefix = string.Empty;
 
-});
 
 // Enable CORS
 app.UseCors(MyAllowSpecificOrigins);
@@ -42,13 +40,5 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(
-        Path.Combine(Directory.GetCurrentDirectory(),
-        "Images")),
-    RequestPath="/Images"
-});
 
 app.Run();

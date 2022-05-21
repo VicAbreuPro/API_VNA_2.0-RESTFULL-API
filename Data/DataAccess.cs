@@ -533,7 +533,7 @@ namespace API_VNA_2._0.Data
             try
             {
                 // Create new connection to mysql using connection string
-                using (var connection = new MySqlConnection(Conn.strConn))
+                using (var connection = new MySqlConnection(Conn.strConn3))
                 {
                     // Create new data adapter varible to get table result of sql select statement
                     using (var data = new MySqlDataAdapter(sql_select, connection))
@@ -543,10 +543,10 @@ namespace API_VNA_2._0.Data
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 // Return empty table
-                return dt;
+                throw new Exception(e.Message);
             }
             // Return Data Table
             return dt;
@@ -577,7 +577,7 @@ namespace API_VNA_2._0.Data
             serial_control_board_aux = dr["serial_control_board"].ToString(),
             serial_suply_power_aux = dr["serial_power_suply"].ToString(),
             wb_serial_aux = dr["wb_serial"].ToString(),
-            data_buy_aux = dr["data_buy"].ToString(),
+            data_buy_aux = dr["date_buy"].ToString(),
             start_warranty_aux = dr["warranty_start_date"].ToString(),
             warranty_type_aux = dr["warranty"].ToString(),
             ship_local_aux = dr["local_ship"].ToString(),
@@ -588,19 +588,26 @@ namespace API_VNA_2._0.Data
 
         public static int get_id_sales_aux(string name)
         {
-            var cmd = "SELEC id FROM wb.clients WHERE name = @name_aux";
+            var cmd = "SELECT id FROM wb.clients WHERE name = @name_aux";
 
-            using(var connection = new MySqlConnection(Conn.strConn3))
+            try
             {
-                MySqlCommand cmd_aux = new MySqlCommand(cmd, connection);
-                cmd_aux.Parameters.AddWithValue("@name_aux", name);
+                using (var connection = new MySqlConnection(Conn.strConn3))
+                {
+                    MySqlCommand cmd_aux = new MySqlCommand(cmd, connection);
+                    cmd_aux.Parameters.AddWithValue("@name_aux", name);
 
-                connection.Open();
+                    connection.Open();
 
-                int id = Convert.ToInt32(cmd_aux.ExecuteScalar());
-                return id;
+                    int id = Convert.ToInt32(cmd_aux.ExecuteScalar());
+                    return id;
 
+                }
+            }catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
             }
+
         }
 
         /// <summary>
@@ -610,18 +617,19 @@ namespace API_VNA_2._0.Data
         public static bool Add_Test(Sale_Aux s)
         {
             // Atribuir a uma variável o comando SQL para inserir os dados e seus respetivos valores
-            var sqlInsert = "INSERT INTO wb.sales_aux(client_id, equipment, serial_factory, serial_control_board, serial_power_suply, wb_serial, data_buy, warranty, warranty_start_date, localship, seller) VALUES(@s_client_id, @s_equipment, @s_serial_factory, @s_serial_control_board, @s_serial_power_suply, @s_wb_serial, @s_data_buy, @s_warranty, @s_warrant_start_date, @s_localship, @s_seller)";
+            var sqlInsert = "INSERT INTO wb.sales(client_id, cli_name, equipment, serial_factory, serial_control_board, serial_power_suply, wb_serial, date_buy, warranty, warranty_start_date, local_ship, seller) VALUES(@s_client_id, @s_cli_name, @s_equipment, @s_serial_factory, @s_serial_control_board, @s_serial_power_suply, @s_wb_serial, @s_data_buy, @s_warranty, @s_warranty_start_date, @s_localship, @s_seller)";
 
             // Iniciar processo de conexão a ao servidor com auxilio da Classe Conn que possui os dados de conexão
             try
             {
-                using (var connection = new MySqlConnection(Conn.strConn))
+                using (var connection = new MySqlConnection(Conn.strConn3))
                 {
                     // Criar novo objeto "comando" para executar comando SQL criado
                     MySqlCommand sqlInsert_Aux = new MySqlCommand(sqlInsert, connection);
 
                     //Adicionar parâmetros ao comando de acordo com as variáveis de entrada (método mais seguro)
                     sqlInsert_Aux.Parameters.AddWithValue("@s_client_id", s.cli_id);
+                    sqlInsert_Aux.Parameters.AddWithValue("@s_cli_name", s.name);
                     sqlInsert_Aux.Parameters.AddWithValue("@s_equipment", s.model);
                     sqlInsert_Aux.Parameters.AddWithValue("@s_serial_factory", s.factory_serial);
                     sqlInsert_Aux.Parameters.AddWithValue("@s_serial_control_board", s.serial_control_board);
@@ -644,7 +652,7 @@ namespace API_VNA_2._0.Data
             }
             catch (Exception e)
             {
-                throw e;
+                throw new Exception(e.Message);
                 // Exibir mensagem do erro específico
             }
         }
