@@ -10,47 +10,41 @@ namespace API_VNA_2._0.Controllers
     public class ProductController : ControllerBase
     {
         [HttpGet("ProductList")]
-        public string P_List()
+        public ActionResult<string> P_List()
         {
-            Products.productList = Data.DataAccess.GetProducts();
-            var json = JsonConvert.SerializeObject(Products.productList);
-            return json;
+            List<Product> list = Products.GetProducts();
+            if(list != null) return Ok(JsonConvert.SerializeObject(list));
+            else return Unauthorized("Failed to fetch");
         }
 
         [HttpGet("TopStockProduct")]
         public ActionResult<string> Tp_Product()
         {
-            string topProduct = Products.TopProductStock();
+            string? topProduct = Products.TopProductStock();
             if (topProduct != null) return Ok(topProduct);
             return Unauthorized();
         }
 
         [HttpPost("AddProduct")]
-        public async Task<ActionResult> PostProduct(Product p)
+        public ActionResult<string> PostProduct(Product p)
         {
             // Add new Product with bool response to confirm the success of operation
-            bool aux = Data.DataAccess.AddProduct(p);
-
-            // Define Task Delay
-            await Task.Delay(2000);
+            bool aux = Products.AddProduct(p);
 
             // Return Http code according the result of Add Product Method from data layer
-            if (aux == true) return Ok();
-            else return Unauthorized();
+            if (aux == true) return Ok("succes");
+            else return Unauthorized("failed to add product");
         }
 
         [HttpPut("UpdateProduct")]
-        public async Task<ActionResult> UpdateProduct(Product p)
+        public ActionResult<string> UpdateProduct(Product p)
         {
             // Update Porduct with bool response to confirm the success of operation
-            bool aux = Data.DataAccess.UpdateProduct(p);
-
-            // Define Task Delay
-            await Task.Delay(2000);
+            bool aux = Products.UpdateProduct(p);
 
             // Return Http code according the result of Update Product Method from data layer
-            if (aux == true) return Ok();
-            else return Unauthorized();
+            if (aux == true) return Ok("succes");
+            else return Unauthorized("failed to update");
         }
     }
 }

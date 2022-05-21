@@ -1,4 +1,5 @@
 ﻿
+
 namespace API_VNA_2._0.BusinessObjects
 {
     /// <summary>
@@ -27,10 +28,6 @@ namespace API_VNA_2._0.BusinessObjects
             this.location = location;
             this.date = date;
         }
-
-        #region Metodos
-
-        #endregion
     }
 }
 

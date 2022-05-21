@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
 using API_VNA_2._0.BusinessObjects;
 using Newtonsoft.Json;
 
@@ -10,47 +9,41 @@ namespace API_VNA_2._0.Controllers
     public class ClientController : ControllerBase
     {
         [HttpGet("ClientList")]
-        public string C_List()
+        public ActionResult<string> C_List()
         {
-            Clients.clientList = Data.DataAccess.GetClients();
-            var json = JsonConvert.SerializeObject(Clients.clientList);
-            return json;
+            List<Client> list = Clients.GetClients();
+            if (list != null) return Ok(JsonConvert.SerializeObject(list));
+            else return Unauthorized("Failed to fetch");
         }
 
         [HttpGet("TopClientLocation")]
         public ActionResult<string> TopCliLocal()
         {
-            string topLocal = Clients.TopClientLocation();
-            if(topLocal != null) return Ok(topLocal);
-           else return Unauthorized();
+            string? topLocal = Clients.TopClientLocation();
+            if(topLocal != null) return Ok(topLocal.ToString());
+            else return Unauthorized("failed to fetch");
         }
 
         [HttpPost("AddClient")]
-        public async Task<ActionResult> PostClient(Client c)
+        public ActionResult<string> PostClient(Client c)
         {
             // Add new Client with bool response to confirm the success of operation
-            bool aux = Data.DataAccess.AddClient(c);
-
-            // Define Task Delay
-            await Task.Delay(2000);
+            bool aux = Clients.AddClient(c);
 
             // Return Http code according the result of Add Client Method from data layer
-            if(aux == true) return Ok();
-            else return Unauthorized();
+            if(aux == true) return Ok("success");
+            else return Unauthorized("failed to add client");
         }
 
         [HttpPut("UpdateClient")]
-        public async Task<ActionResult> UpdateClient(Client c)
+        public ActionResult<string> UpdateClient(Client c)
         {
             // Update Client with bool response to confirm the success of operation
-            bool aux = Data.DataAccess.UpdateClient(c);
-
-            // Define Task Delay
-            await Task.Delay(2000);
+            bool aux = Clients.UpdateClient(c);
 
             // Return Http code according the result of Update Client Method from data layer
-            if (aux == true) return Ok();
-            else return Unauthorized();
+            if (aux == true) return Ok("succes");
+            else return Unauthorized("update failed");
         }
     }
 }

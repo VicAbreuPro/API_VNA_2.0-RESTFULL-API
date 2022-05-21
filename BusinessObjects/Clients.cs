@@ -1,5 +1,6 @@
-﻿
+﻿using API_VNA_2._0.Data;
 using System.Data;
+using MySql.Data.MySqlClient;
 
 namespace API_VNA_2._0.BusinessObjects
 {
@@ -9,16 +10,115 @@ namespace API_VNA_2._0.BusinessObjects
     [Serializable]
     public class Clients
     {
-        public static List<Client> clientList = new();
-
-        public static List<Client> ClientList
+        #region Metodos
+        /// <summary>
+        /// Retornar List De Clientes
+        /// </summary>
+        public static List<Client> GetClients()
         {
-            get { return clientList; }
+            DataTable dt = DataAccess.GetClientTable();
+            List<Client> c = new();
+
+            string? id;
+            string? name;
+            string? location;
+            string? date;
+
+            c = (from DataRow dr in dt.Rows select new Client(id = dr["client_id"].ToString(), name = dr["client_name"].ToString(), location = dr["client_location"].ToString(), date = dr["since_date"].ToString())).ToList();
+            return c;
         }
 
-        public static string TopClientLocation()
+        /// <summary>
+        /// Adicionar Cliente a base de dados
+        /// </summary>
+        /// <param name="c"<></param>
+        public static bool AddClient(Client c)
         {
-            clientList = Data.DataAccess.GetClients();
+            // Atribuir a uma variável o comando SQL para inserir os dados e seus respetivos valores
+            var sqlInsert = "INSERT INTO cli_app.Cliente(client_name, client_location, since_date) VALUES(@name, @local, @data)";
+
+            // Iniciar processo de conexão a ao servidor com auxilio da Classe Conn que possui os dados de conexão
+            try
+            {
+                using (var connection = new MySqlConnection(Conn.strConn))
+                {
+                    // Criar novo objeto "comando" para executar comando SQL criado
+                    MySqlCommand sqlInsert_Aux = new MySqlCommand(sqlInsert, connection);
+
+                    //Adicionar parâmetros ao comando de acordo com as variáveis de entrada (método mais seguro)
+                    sqlInsert_Aux.Parameters.AddWithValue("@name", c.name);
+                    sqlInsert_Aux.Parameters.AddWithValue("@local", c.location);
+                    sqlInsert_Aux.Parameters.AddWithValue("@data", c.date);
+
+                    // Abrir conexão com base de dados
+                    connection.Open();
+
+                    // Executar comando SQL
+                    sqlInsert_Aux.ExecuteReader();
+                    return true;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+                // Exibir mensagem do erro específico
+            }
+        }
+
+        public static bool UpdateClient(Client c)
+        {
+            // Variáveis Auxiliares
+            bool aux = false;
+            List<Client> clientListAux = GetClients();
+
+            // Verificar se Cliente existe na base de dados
+            foreach (Client client in clientListAux)
+            {
+                if (client.id == c.id)
+                {
+                    aux = true;
+                }
+            }
+
+            // Se cliente existir, atulizar as informações com os atributos do novo objeto do tipo Cliente recebido
+            if (aux == true)
+            {
+                var sqlUpdate = "UPDATE cli_app.Cliente SET client_name = @cliAux , client_location = @localAux , since_date = @dateAux WHERE client_id = @idAux";
+
+                // Iniciar processo de conexão a ao servidor com auxilio da Classe Conn que possui os dados de conexão
+                try
+                {
+                    using (var connection = new MySqlConnection(Conn.strConn))
+                    {
+                        // Criar novo objeto "comando" para executar comando SQL criado
+                        MySqlCommand sqlInsert_Aux = new MySqlCommand(sqlUpdate, connection);
+
+                        //Adicionar parâmetros ao comando de acordo com as variáveis de entrada (método mais seguro)
+                        sqlInsert_Aux.Parameters.AddWithValue("@cliAux", c.name);
+                        sqlInsert_Aux.Parameters.AddWithValue("@localAux", c.location);
+                        sqlInsert_Aux.Parameters.AddWithValue("@dateAux", c.date);
+                        sqlInsert_Aux.Parameters.AddWithValue("@idAux", c.id);
+
+                        // Abrir conexão com base de dados
+                        connection.Open();
+
+                        // Executar comando SQL
+                        sqlInsert_Aux.ExecuteReader();
+                        return true;
+                    }
+                }
+                catch (Exception)
+                {
+                    return false;
+                    // Exibir mensagem do erro específico
+                }
+            }
+            else return false;
+        }
+
+        public static string? TopClientLocation()
+        {
+            List<Client> clientList = GetClients();
 
             // Variaveis Axuliares
             string? topLocal = "";
@@ -85,5 +185,6 @@ namespace API_VNA_2._0.BusinessObjects
             }
             return topLocal;
         }
+        #endregion
     }
 }

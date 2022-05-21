@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using API_VNA_2._0.Data;
+using System.Data;
+using MySql.Data.MySqlClient;
 
 namespace API_VNA_2._0.BusinessObjects
 {
@@ -9,18 +8,49 @@ namespace API_VNA_2._0.BusinessObjects
     /// Serializable object Business Sales
     /// </summary>
     [Serializable]
-    public class Sales
+    public class Sales_view
     {
-        public static List<Sale> saleList = new();
+        public int? serial { get; set; }
+        public int valor { get; set; }
+        public string? model { get; set; }
+        public string? client_name { get; set; }
+        public string? date { get; set; }
 
-        public static List<Sale> SaleList
+        public Sales_view()
         {
-            get { return saleList; }
+            // Class Deafult Constructor
         }
 
-        public static string TopSalesProduct()
+        public Sales_view(string? client_name, int serial, string model, string date, int valor)
         {
-            saleList = Data.DataAccess.GetSales();
+            this.serial = serial;
+            this.model = model;
+            this.client_name = client_name;
+            this.date = date;
+            this.valor = valor;
+        }
+
+        public static List<Sales_view> GetSales()
+        {
+            DataTable dt = DataAccess.GetSalesTable();
+            List<Sales_view> p = new();
+
+            string? client_name;
+            int serial;
+            string? model;
+            int valor;
+            string? date;
+
+            // LINQ
+            p = (from DataRow dr in dt.Rows select new Sales_view(client_name = dr["client_name"].ToString(), serial = Convert.ToInt32(dr["serial_number"]), model = dr["model"].ToString(), date = dr["data_buy"].ToString(), valor = Convert.ToInt32(dr["valor"]))).ToList();
+
+            // Return list of sales
+            return p;
+        }
+
+        public static string? TopSalesProduct()
+        {
+            List<Sales_view> saleList = GetSales();
 
             // Variaveis Axuliares
             string? topSale = "";
@@ -92,7 +122,7 @@ namespace API_VNA_2._0.BusinessObjects
         public static int YearlySale()
         {
             // Get List of Sales
-            saleList = Data.DataAccess.GetSales();
+            List<Sales_view> saleList = GetSales();
 
             // Get current date
             DateTime now = DateTime.Now;
